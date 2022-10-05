@@ -20,7 +20,6 @@ class SessionManager @Inject constructor(
     }
 
     fun logout() {
-        /* .... */
         pref.setAccessToken("")
     }
 }
