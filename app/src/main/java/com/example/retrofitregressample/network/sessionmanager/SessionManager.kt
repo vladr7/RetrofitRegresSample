@@ -15,6 +15,10 @@ class SessionManager @Inject constructor(
 
     fun refreshToken(refreshToken: String): String = authRepository.refreshToken(refreshToken)
 
+    fun saveAuthToken(token: String) {
+        pref.setAccessToken(token)
+    }
+
     fun logout() {
         /* .... */
         pref.setAccessToken("")

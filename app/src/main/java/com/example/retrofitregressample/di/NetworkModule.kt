@@ -67,17 +67,18 @@ object NetworkModule {
         .addInterceptor(authInterceptor)
         .build()
 
-    private val contentType = "application/json".toMediaType()
-    @OptIn(ExperimentalSerializationApi::class)
-    private val kotlinxConverterFactory = Json.asConverterFactory(contentType)
+//    private val contentType = "application/json".toMediaType()
+//    @OptIn(ExperimentalSerializationApi::class)
+//    private val kotlinxConverterFactory = Json.asConverterFactory(contentType)
 
-    @Singleton
-    @Provides
-    fun provideRetrofit(
-        okHttpClient: OkHttpClient
-    ): Retrofit = Retrofit.Builder()
-        .baseUrl(Constants.BASE_URL)
-        .client(okHttpClient)
-        .addConverterFactory(kotlinxConverterFactory)
-        .build()
+//    @Singleton
+//    @Provides
+//    fun provideRetrofit(
+//        okHttpClient: OkHttpClient
+//    ): Retrofit = Retrofit.Builder()
+//        .baseUrl(Constants.BASE_URL)
+//        .client(okHttpClient)
+//        .addConverterFactory(kotlinxConverterFactory)
+//        .build()
+//
 }
