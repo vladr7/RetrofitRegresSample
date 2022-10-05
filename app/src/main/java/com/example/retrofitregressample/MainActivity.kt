@@ -1,6 +1,9 @@
 package com.example.retrofitregressample
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -27,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 
 private lateinit var apiClient: ApiClient
@@ -56,6 +60,7 @@ class MainActivity : ComponentActivity() {
 fun Greeting(sessionManager: SessionManager) {
     val TAG = "vladr: main: "
     apiClient = ApiClient(sessionManager = sessionManager)
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -75,7 +80,7 @@ fun Greeting(sessionManager: SessionManager) {
             shape = RectangleShape,
             onClick = {
                 composableScope.launch {
-                    login(sessionManager)
+                    login(sessionManager, context)
                 }
             }
         ) {
@@ -90,7 +95,7 @@ fun Greeting(sessionManager: SessionManager) {
             shape = RectangleShape,
             onClick = {
                 composableScope.launch {
-                    getResources()
+                    getResources(context)
                 }
             }
         ) {
@@ -107,7 +112,7 @@ fun Greeting(sessionManager: SessionManager) {
             onClick = {
                 composableScope.launch {
                     try {
-                        getResource(resourceIdText.toInt())
+                        getResource(resourceIdText.toInt(), context)
 
                     } catch (e: java.lang.Exception) {
                         println("$TAG wrong format -> need number")
@@ -138,48 +143,57 @@ fun DefaultPreview() {
     RetrofitRegresSampleTheme {}
 }
 
-private suspend fun login(sessionManager: SessionManager) {
+private suspend fun login(sessionManager: SessionManager, context: Context) {
     val TAG = "vladr: login: "
     try {
-        val result = apiClient.getApiService()
+        val result = apiClient.getApiService(context)
             .login(LoginRequest(email = "eve.holt@reqres.in", password = "mypassword"))
         println("$TAG token: ${result.body()?.token}")
         if (result.isSuccessful) {
+            Toast.makeText(context, "Logged in Successfully", Toast.LENGTH_SHORT).show()
             sessionManager.saveAuthToken(result.body()?.token.toString())
         } else {
             println("$TAG result not successfull: ${result.errorBody()}")
+            Toast.makeText(context, "Failed!", Toast.LENGTH_SHORT).show()
         }
     } catch (e: java.lang.Exception) {
         println("$TAG error: ${e.message}")
+        Toast.makeText(context, "Failed!", Toast.LENGTH_SHORT).show()
     }
 }
 
-private suspend fun getResources() {
+private suspend fun getResources(context: Context) {
     val TAG = "vladr: get resources: "
     try {
-        val result = apiClient.getApiService()
+        val result = apiClient.getApiService(context)
             .getResources()
         if (result.isSuccessful) {
+            Toast.makeText(context, "Success!", Toast.LENGTH_SHORT).show()
             println("$TAG success: ${result.body()}")
         } else {
             println("$TAG result not successfully: ${result.errorBody()}")
+            Toast.makeText(context, "Failed!", Toast.LENGTH_SHORT).show()
         }
     } catch (e: java.lang.Exception) {
         println("$TAG error: ${e.message}")
+        Toast.makeText(context, "Failed!", Toast.LENGTH_SHORT).show()
     }
 }
 
-private suspend fun getResource(resourceId: Int = 2) {
+private suspend fun getResource(resourceId: Int = 0, context: Context) {
     val TAG = "vladr: get single resource: "
     try {
-        val result = apiClient.getApiService()
+        val result = apiClient.getApiService(context)
             .getResource(resourceId)
         if (result.isSuccessful) {
             println("$TAG success: ${result.body()}")
+            Toast.makeText(context, "Success!", Toast.LENGTH_SHORT).show()
         } else {
             println("$TAG result not successfully: ${result.errorBody()}")
+            Toast.makeText(context, "Failed!", Toast.LENGTH_SHORT).show()
         }
     } catch (e: java.lang.Exception) {
         println("$TAG error: ${e.message}")
+        Toast.makeText(context, "Failed!", Toast.LENGTH_SHORT).show()
     }
 }
