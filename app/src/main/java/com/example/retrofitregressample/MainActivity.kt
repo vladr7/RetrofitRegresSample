@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,16 +29,16 @@ private lateinit var apiClient: ApiClient
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject lateinit var sessionManager: SessionManager
+    @Inject
+    lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             RetrofitRegresSampleTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = colorResource(id = R.color.black)
+                    color = Color.LightGray
                 ) {
                     Greeting(sessionManager)
                 }
@@ -58,8 +59,10 @@ fun Greeting(sessionManager: SessionManager) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val composableScope = rememberCoroutineScope()
+
         Button(
             modifier = Modifier
+                .padding(10.dp)
                 .width(200.dp)
                 .height(50.dp),
             shape = RectangleShape,
@@ -70,6 +73,21 @@ fun Greeting(sessionManager: SessionManager) {
             }
         ) {
             Text("Login")
+        }
+
+        Button(
+            modifier = Modifier
+                .padding(10.dp)
+                .width(200.dp)
+                .height(50.dp),
+            shape = RectangleShape,
+            onClick = {
+                composableScope.launch {
+                    getResources()
+                }
+            }
+        ) {
+            Text("Get Resources")
         }
     }
 
@@ -90,6 +108,20 @@ private suspend fun login(sessionManager: SessionManager) {
             sessionManager.saveAuthToken(result.body()?.token.toString())
         } else {
             println("vladr: result not successfull: ${result.errorBody()}")
+        }
+    } catch (e: java.lang.Exception) {
+        println("vladr: error: ${e.message}")
+    }
+}
+
+private suspend fun getResources() {
+    try {
+        val result = apiClient.getApiService()
+            .getResources()
+        if (result.isSuccessful) {
+            println("vladr: success: ${result.body()}")
+        } else {
+            println("vladr: result not successfully: ${result.errorBody()}")
         }
     } catch (e: java.lang.Exception) {
         println("vladr: error: ${e.message}")
